@@ -26,34 +26,6 @@ dotenv : Gérer les variables d'environnement (comme les clés secrètes)
 
 nodemon : Redémarre automatiquement le serveur lors des modifications (dev only)
 
-Explications des paquets :
-
-express : Framework pour construire l'API
-
-cors : Gérer les requêtes cross-origin
-
-mongoose : Pour MongoDB (si tu utilises une base de données)
-
-body-parser : Lire les données des requêtes POST/PUT
-
-dotenv : Gérer les variables d'environnement (comme les clés secrètes)
-
-nodemon : Redémarre automatiquement le serveur lors des modifications (dev only)
-
-Explications des paquets :
-
-express : Framework pour construire l'API
-
-cors : Gérer les requêtes cross-origin
-
-mongoose : Pour MongoDB (si tu utilises une base de données)
-
-body-parser : Lire les données des requêtes POST/PUT
-
-dotenv : Gérer les variables d'environnement (comme les clés secrètes)
-
-nodemon : Redémarre automatiquement le serveur lors des modifications (dev only)
-
 # Créer une app React (si ce n'est pas déjà fait)
 npx create-react-app .
 
