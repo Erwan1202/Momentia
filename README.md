@@ -1,2 +1,3 @@
-# IMDB
-node.js/api project
+# Momentia
+"INstragram" like web app 
+node.js and react.js
