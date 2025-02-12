@@ -1,1 +1,29 @@
-Node.jsnode_modules/npm-debug.log*yarn-error.logpackage-lock.json# Environnement.env# Logslogs*.loglogs/*.lognpm-debug.log*yarn-debug.log*yarn-error.log*# Processpids*.pid*.seed*.pid.lock# IDE/Éditeurs de texte.vscode/.idea/.DS_Store*.swp*.swo
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log
+package-lock.json
+
+# Environnement
+.env
+
+# Logs
+logs
+*.log
+logs/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Process
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# IDE/Éditeurs de texte
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
