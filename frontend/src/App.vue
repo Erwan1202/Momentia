@@ -1,9 +1,6 @@
 <template>
   <div>
     <router-view />
-    <button @click="handleClick">Click Me</button>
-    <h1>{{ message }}</h1>
-    <button @click="goToHomeView">Go to HomeView</button>
   </div>
 </template>
 
@@ -28,16 +25,22 @@ export default {
       }
     };
 
-    // Naviguer vers HomeView
+    // Naviguer vers Posts
     const goToHomeView = () => {
-      router.push('/'); // ✅ Correct
+      console.log("🔄 Navigation vers Posts..."); // ✅ Ajout pour débogage
+      router.push({ name: 'posts' });    };
+
+    // Fonction pour le bouton "Click Me"
+    const handleClick = () => {
+      console.log("🔘 Bouton Click Me cliqué !");
     };
 
     onMounted(fetchMessage);
 
     return {
       message,
-      goToHomeView
+      goToHomeView,
+      handleClick // ✅ Ajout pour éviter une erreur
     };
   }
 };
