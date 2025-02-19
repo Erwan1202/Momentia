@@ -14,6 +14,7 @@ const pool = new Pool({
 
 
 class Comment{
+    
     static async getAllComment(){
         const result = await db.query('SELECT * FROM comments');
         return result.rows;

@@ -3,14 +3,14 @@ const cors = require('cors');
 const db = require('./config/db');  // Import de la connexion DB
 
 // Import des routes
-const userRoutes = require('./routes/userRoutes');
-const postRoutes = require('./routes/postRoutes');
-const commentRoutes = require('./routes/commentRoutes');
-const likeRoutes = require('./routes/likeRoutes');
-const followRoutes = require('./routes/followRoutes');
+const userRoutes = require('./routes/user_routes');
+const postRoutes = require('./routes/post_routes');
+const commentRoutes = require('./routes/comment_routes');
+const likeRoutes = require('./routes/like_routes');
+const followRoutes = require('./routes/follow_routes');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3667;
 
 app.use(cors());
 app.use(express.json());  // Pour analyser le corps des requêtes en JSON

@@ -27,6 +27,11 @@ class User{
         return result.rows[0];
     }
 
+    static async getUserByUsername(username){
+        const result = await db.query('SELECT * FROM users WHERE name = $1', [username]);
+        return result.rows[0];
+    }
+
     static async createUser(data){
         const result = await db.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *', [data.name, data.email, data.password]);
         return result.rows[0];
