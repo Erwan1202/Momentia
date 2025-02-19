@@ -1,5 +1,15 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/db');
+require('dotenv').config();
+
+const pool = new Pool({
+    user: DB_USER,
+    password: DB_PASSWORD,
+    host: DB_HOST,
+    database: DB_NAME,
+    port: DB_PORT,
+});
+
 
 class User{
     static async getAllUser(){7

@@ -1,7 +1,15 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/db');
 const User = require('./User');
+require('dotenv').config();
 
+const pool = new Pool({
+    user: DB_USER,
+    password: DB_PASSWORD,
+    host: DB_HOST,
+    database: DB_NAME,
+    port: DB_PORT,
+});
 class Post{
     static async getAllPost(){
         const result = await db.query('SELECT * FROM posts');
