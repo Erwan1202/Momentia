@@ -1,5 +1,10 @@
-import { createApp } from 'vue'
 import './style.css'
-import App from './App.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import axios from 'axios';
 
-createApp(App).mount('#app')
+const app = createApp(App);
+app.config.globalProperties.$axios = axios; // ✅ Ajout global d'Axios
+app.use(router);
+app.mount('#app');
