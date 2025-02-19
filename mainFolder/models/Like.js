@@ -3,19 +3,38 @@ const db = require('../config/db');
 const User = require('./User');
 const Post = require('./Post');
 
-const Like = db.define('Like', {
-    id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
-    user_id: { type: DataTypes.BIGINT, allowNull: false },
-    post_id: { type: DataTypes.BIGINT, allowNull: false },
-    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
-}, {
-    timestamps: false,
-    tableName: 'likes'
-});
+class Like{
+    static async getAllLike(){
+        const result = await db.query('SELECT * FROM likes');
+        return result.rows;
+    }
 
-// Relations
-Like.belongsTo(User, { foreignKey: 'user_id' });
-Like.belongsTo(Post, { foreignKey: 'post_id' });
+    static async getLikeById(id){
+        const result = await db.query('SELECT * FROM likes WHERE id = $1', [id]);
+        return result.rows[0];
+    }
+
+    static async createLike(data){
+        const result = await db.query('INSERT INTO likes (user_id, post_id) VALUES ($1, $2) RETURNING *', [data.user_id, data.post_id]);
+        return result.rows[0];
+    }
+
+    static async deleteLike(id){
+        const result = await db.query('DELETE FROM likes WHERE id = $1', [id]);
+        return result;
+    }
+
+    static async getLikeByUser(id){
+        const result = await db.query('SELECT * FROM likes WHERE user_id = $1', [id]);
+        return result.rows;
+    }
+
+    static async getLikeByPost(id){
+        const result = await db.query('SELECT * FROM likes WHERE post_id = $1', [id]);
+        return result.rows;
+    }
+
+}
 
 module.exports = Like;
 
