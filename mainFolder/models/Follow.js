@@ -2,18 +2,50 @@ const { DataTypes } = require('sequelize');
 const db = require('../config/db');
 const User = require('./User');
 
-const Follow = db.define('Follow', {
-    id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
-    follower_id: { type: DataTypes.BIGINT, allowNull: false },
-    following_id: { type: DataTypes.BIGINT, allowNull: false },
-    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
-}, {
-    timestamps: false,
-    tableName: 'follows'
-});
+class Follow{
+    static async getAllFollow(){
+        const result = await db.query('SELECT * FROM follows');
+        return result.rows;
+    }
 
-// Relations
-Follow.belongsTo(User, { foreignKey: 'follower_id', as: 'Follower' });
-Follow.belongsTo(User, { foreignKey: 'following_id', as: 'Following' });
+    static async getFollowById(id){
+        const result = await db.query('SELECT * FROM follows WHERE id = $1', [id]);
+        return result.rows[0];
+    }
+
+    static async createFollow(data){
+        const result = await db.query('INSERT INTO follows (user_id, follower_id) VALUES ($1, $2) RETURNING *', [data.user_id, data.follower_id]);
+        return result.rows[0];
+    }
+
+    static async deleteFollow(id){
+        const result = await db.query('DELETE FROM follows WHERE id = $1', [id]);
+        return result;
+    }
+
+    static async getFollowByUser(id){
+        const result = await db.query('SELECT * FROM follows WHERE user_id = $1', [id]);
+        return result.rows;
+    }
+
+    static async getFollowByFollower(id){
+        const result = await db.query('SELECT * FROM follows WHERE follower_id = $1', [id]);
+        return result.rows;
+    }
+
+    static async getFollowByUserEmail(email){
+        const user = await User.getUserByEmail(email);
+        const result = await db.query('SELECT * FROM follows WHERE user_id = $1', [user.id]);
+        return result.rows;
+    }
+
+    static async getFollowByFollowerEmail(email){
+        const user = await User.getUserByEmail(email);
+        const result = await db.query('SELECT * FROM follows WHERE follower_id = $1', [user.id]);
+        return result.rows;
+    }
+
+    
+}
 
 module.exports = Follow;
