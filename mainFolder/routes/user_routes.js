@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user_controller');
-const authMiddleware = require('../middlewares/authMiddleware'); // Pour protéger certaines routes
 
 //creation utilisateur
 router.post('/register', userController.createUser);
@@ -13,16 +12,16 @@ router.post('/login', userController.login);
 router.post('/logout', userController.logout);
 
 //récupérer un utilisateur
-router.get('/:id', authMiddleware, userController.getUser);
+router.get('/:id', userController.getUser);
 
 //mettre à jour un utilisateur
-router.put('/:id', authMiddleware, userController.updateUser);
+router.put('/:id', userController.updateUser);
 
 //récupérer tous les utilisateurs
-router.get('/', authMiddleware, userController.getAllUser);
+router.get('/', userController.getAllUser);
 
 //supprimer un utilisateur
-router.delete('/:id', authMiddleware, userController.deleteUser);
+router.delete('/:id', userController.deleteUser);
 
 
 
