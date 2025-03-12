@@ -43,6 +43,12 @@ class Like{
         return result.rows;
     }
 
+    static async getLikeByComment(id){ 
+        const result = await db.query('SELECT * FROM likes WHERE comment_id = $1', [id]);
+        return result.rows;
+    }
+
+    
 }
 
 module.exports = Like;

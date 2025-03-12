@@ -62,6 +62,13 @@ class Post{
         return result.rows;
     }
 
+    static async getPostByTitle(title){
+        const result = await db.query('SELECT * FROM posts WHERE title = $1', [title]);
+        return result.rows;
+    }
+
+    
+
 }
 
 module.exports = Post;
