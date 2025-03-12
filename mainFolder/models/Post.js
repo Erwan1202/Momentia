@@ -67,7 +67,10 @@ class Post{
         return result.rows;
     }
 
-    
+    static async getPostByDate(created_at){
+        const result = await db.query('SELECT * FROM posts ORDER BY created_at DESC');
+        return result.rows;
+    }
 
 }
 
