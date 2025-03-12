@@ -1,47 +1,21 @@
 <template>
-  <div>
-    <router-view />
+  <div class="flex min-h-screen bg-gray-100">
+    <!-- ✅ SideMenu bien positionné à gauche -->
+    <SideMenu class="w-64" />
+
+    <!-- ✅ Conteneur principal où les vues s'affichent -->
+    <div class="flex-1 p-8">
+      <router-view />
+    </div>
+
+    <!-- ✅ Espace pour "Amis" (visible sur grand écran) -->
+    <div class="w-64 bg-gray-200 p-4 hidden lg:block">
+      <h2 class="font-bold text-lg">Amis</h2>
+      <p>🔜 Bientôt disponible...</p>
+    </div>
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router'; // ✅ Ajout pour Vue Router
-
-export default {
-  setup() {
-    const message = ref("Chargement...");
-    const router = useRouter(); // ✅ Utilisation de useRouter()
-
-    // Charger le message depuis l'API
-    const fetchMessage = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/");
-        message.value = response.data;
-      } catch (error) {
-        message.value = "Erreur de connexion au serveur";
-        console.error("Erreur API :", error);
-      }
-    };
-
-    // Naviguer vers Posts
-    const goToHomeView = () => {
-      console.log("🔄 Navigation vers Posts..."); // ✅ Ajout pour débogage
-      router.push({ name: 'posts' });    };
-
-    // Fonction pour le bouton "Click Me"
-    const handleClick = () => {
-      console.log("🔘 Bouton Click Me cliqué !");
-    };
-
-    onMounted(fetchMessage);
-
-    return {
-      message,
-      goToHomeView,
-      handleClick // ✅ Ajout pour éviter une erreur
-    };
-  }
-};
+<script setup>
+import SideMenu from './components/common/SideMenu.vue';
 </script>
