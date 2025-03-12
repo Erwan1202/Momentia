@@ -1,7 +1,5 @@
-const Like = require('../models/like');
-const db = require('../config/db');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const Like = require('../models/Like');
+
 
 exports.createLike = (req, res, next) => {
   const like = new Like.createLike({

@@ -1,8 +1,4 @@
 const Post = require('../models/Post');
-const db = require('../config/db');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
 
 //creation post
 exports.createPost = (req, res, next) => {

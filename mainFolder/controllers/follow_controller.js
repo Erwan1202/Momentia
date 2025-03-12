@@ -1,9 +1,4 @@
-const follow = require('../models/follow');
-const db = require('../config/db');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const Follow = require('../models/follow');
-
+const Follow = require('../models/Follow');
 
 //creation follow
 exports.createFollow = (req, res, next) => {

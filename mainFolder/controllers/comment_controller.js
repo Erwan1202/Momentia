@@ -1,8 +1,4 @@
-const comment = require('../models/Comment');
-const db = require('../config/db');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
+const Comment = require('../models/Comment');
 
 //creation commentaire
 exports.createComment = (req, res, next) => {
