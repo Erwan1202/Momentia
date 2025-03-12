@@ -1,69 +1,151 @@
+const Post = require('../models/post');
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
-// poster une photo
-exports.postPhoto = (req, res) => {
-    const { user_id, url } = req.body;
-    const query = 'INSERT INTO photos (user_id, url) VALUES (?, ?)';
-    db.query(query, [user_id, url], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.status(201).json({ message: 'Photo postée avec succès', id: result.insertId });
-    });
-};
+//creation post
+exports.createPost = (req, res, next) => {
+    try {
+        const post = new Post({
+            title: req.body.title,
+            content: req.body.content,
+            imageUrl: req.body.imageUrl,
+            userId: req.body.userId
+        });
+        post.save().then(() => {
+            res.status(201).json({
+                message: 'Post saved successfully!'
+            });
+        }).catch((error) => {
+            res.status(400).json({
+                error: error
+            });
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            error: error
+        });
+    }
+}
 
-// récupérer toutes les photos
-exports.getAllPhotos = (req, res) => {
-    const query = 'SELECT * FROM photos';
-    db.query(query, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
+//modification post
+exports.modifyPost = (req, res, next) => {
+    try {
+        const post = new Post({
+            _id: req.params.id,
+            title: req.body.title,
+            content: req.body.content,
+            imageUrl: req.body.imageUrl,
+            userId: req.body.userId
+        });
+        Post.updateOne({ _id: req.params.id }, post).then(() => {
+            res.status(201).json({
+                message: 'Post updated successfully!'
+            });
+        }).catch((error) => {
+            res.status(400).json({
+                error: error
+            });
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            error: error
+        });
+    }
+}
 
-// récupérer une photo
-exports.getPhoto = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM photos WHERE id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (result.length === 0) {
-            return res.status(404).json({ message: 'Photo non trouvée' });
-        }
-        res.json(result[0]);
-    });
-};
+//suppression post
+exports.deletePost = (req, res, next) => {
+    try {
+        Post.deleteOne({ _id: req.params.id }).then(() => {
+            res.status(200).json({
+                message: 'Post deleted successfully!'
+            });
+        }).catch((error) => {
+            res.status(400).json({
+                error: error
+            });
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            error: error
+        });
+    }
+}
 
-// supprimer une photo
-exports.deletePhoto = (req, res) => {
-    const { id } = req.params;
-    const query = 'DELETE FROM photos WHERE id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Photo supprimée avec succès' });
-    });
-};
 
-// modifier une photo
-exports.updatePhoto = (req, res) => {
-    const { id } = req.params;
-    const { url } = req.body;
-    const query = 'UPDATE photos SET url = ? WHERE id = ?';
-    db.query(query, [url, id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Photo modifiée avec succès' });
-    });
-};
+//recuperation post
+exports.getOnePost = (req, res, next) => {
+    try {
+        Post.findOne({ _id: req.params.id }).then((post) => {
+            res.status(200).json(post);
+        }).catch((error) => {
+            res.status(404).json({
+                error: error
+            });
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            error: error
+        });
+    }
+}
 
-// 
+//recuperation de tous les posts
+exports.getAllPosts = (req, res, next) => {
+    try {
+        Post.find().then((posts) => {
+            res.status(200).json(posts);
+        }).catch((error) => {
+            res.status(400).json({
+                error: error
+            });
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            error: error
+        });
+    }
+}
+
+//recuperation de tous les posts d'un utilisateur
+exports.getAllPostsByUser = (req, res, next) => {
+    try {
+        Post.find({ userId: req.params.id }).then((posts) => {
+            res.status(200).json(posts);
+        }).catch((error) => {
+            res.status(400).json({
+                error: error
+            });
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            error: error
+        });
+    }
+}
+
+//recuperation des posts par pagear date decroissante
+export const getPostsByDate = (req, res, next) => {
+    try{
+        Post.find().sort({created_at: -1}).then((posts) => {
+            res.status(200).json(posts);
+        }).catch((error) => {
+            res.status(400).json({
+                error: error
+            });
+        });
+}catch (error) {
+    res.status(500).json({
+        error: error
+    });
+}
+
+}
