@@ -1,242 +1,95 @@
+const User = require('../models/User');
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Inscription
-exports.register = (req, res) => {
-    const { username, email, password } = req.body;
-    const passwordHash = bcrypt.hashSync(password, 10);
+// créer un utilisateur
+export const createUser = (req, res) => {
+    try{
+        const { username, email, password } = req.body;
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        const user = new User.createUser({username, email, password: hashedPassword});
+        res.status(201).json(user);
 
-    const query = 'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)';
-    db.query(query, [username, email, passwordHash], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.status(201).json({ message: 'Utilisateur créé avec succès', id: result.insertId });
-    });
-};
-
-// Connexion
-exports.login = (req, res) => {
-    const { email, password } = req.body;
-
-    const query = 'SELECT * FROM users WHERE email = ?';
-    db.query(query, [email], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (result.length === 0) {
-            return res.status(400).json({ message: 'Utilisateur non trouvé' });
-        }
-
-        const user = result[0];
-        const isValidPassword = bcrypt.compareSync(password, user.password_hash);
-
-        if (!isValidPassword) {
-            return res.status(400).json({ message: 'Mot de passe incorrect' });
-        }
-
-        // Générer un token JWT
-        const token = jwt.sign({ id: user.id }, 'SECRET_KEY', { expiresIn: '1h' });
-
-        res.json({ message: 'Connexion réussie', token });
-    });
-};
-
-// Récupérer un utilisateur
-exports.getUser = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT id, username, email, bio, profile_picture FROM users WHERE id = ?';
-    
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (result.length === 0) {
-            return res.status(404).json({ message: 'Utilisateur non trouvé' });
-        }
-        res.json(result[0]);
-    });
-};
-
-// Récupérer tous les utilisateurs
-exports.getAllUsers = (req, res) => {
-    const query = 'SELECT id, username, email FROM users';
-    db.query(query, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
-
-// Mettre à jour un utilisateur
-exports.updateUser = (req, res) => {
-    const { id } = req.params;
-    const { username, email, bio, profile_picture } = req.body;
-
-    const query = 'UPDATE users SET username = ?, email = ?, bio = ?, profile_picture = ? WHERE id = ?';
-    db.query(query, [username, email, bio, profile_picture, id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Utilisateur mis à jour avec succès' });
-    });
-};
-
-
-// Supprimer un utilisateur
-exports.deleteUser = (req, res) => {
-    const { id } = req.params;
-    const query = 'DELETE FROM users WHERE id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Utilisateur supprimé avec succès' });
-    });
-};
-
-// Patch un utilisateur
-exports.patchUser = (req, res) => {
-    const { id } = req.params;
-    const data = req.body;
-
-    const key = Object.keys(data);
-    const setClause = key.map((item, index) => {
-        return `${item} = ?`;
-    }).join(', ');
-    const values = Object.values(data);
-    const query = {
-        text: `UPDATE users SET ${setClause} WHERE id = ?`,
-        values: [...values, id]
+    }catch(err){
+        res.status(500).json({message: err.message});
     }
-    db.query(query, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Utilisateur mis à jour avec succès' });
-    });
-};
+}   
 
-// Récupérer les posts d'un utilisateur
-exports.getUserPost = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM posts WHERE user_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+// se connecter
+export const login = (req, res) => {
+    try{
+        const { email, password } = req.body;
+        const user = User.getUserByEmail(email);
+        if(!user){
+            return res.status(404).json({message: 'User not found'});
         }
-        res.json(result);
-    });
-};
-
-// Récupérer les commentaires d'un utilisateur
-exports.getUserComment = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM comments WHERE user_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+        if(bcrypt.compareSync(password, user.password)){
+            const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+            return res.status(200).json({token});
+        }else{
+            return res.status(401).json({message: 'Invalid credentials'});
         }
-        res.json(result);
-    });
-};
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
 
-// Récupérer les likes d'un utilisateur
-exports.getUserLike = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM likes WHERE user_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+// se deconnecter
+export const logout = (req, res) => {
+    try{
+        res.status(200).json({token: ''});
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
+
+// récupérer un utilisateur
+export const getUser = (req, res) => {
+    try{
+        const user = User.getUserById(req.params.id);
+        if(!user){
+            return res.status(404).json({message: 'User not found'});
         }
-        res.json(result);
-    });
-};
+        res.status(200).json(user);
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
 
-// Récupérer les utilisateurs suivis par un utilisateur
-exports.getUserFollow = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM follows WHERE user_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+// mettre à jour un utilisateur
+export const updateUser = (req, res) => {
+    try{
+        const user = User.updateUser(req.params.id, req.body);
+        if(!user){
+            return res.status(404).json({message: 'User not found'});
         }
-        res.json(result);
-    });
-};
+        res.status(200).json(user);
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
 
-// Récupérer les followers d'un utilisateur
-exports.getUserFollower = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM follows WHERE follower_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+// récupérer tous les utilisateurs
+export const getAllUser = (req, res) => {
+    try{
+        const users = User.getAllUser();
+        res.status(200).json(users);
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
+
+// supprimer un utilisateur
+export const deleteUser = (req, res) => {
+    try{
+        const user = User.deleteUser(req.params.id);
+        if(!user){
+            return res.status(404).json({message: 'User not found'});
         }
-        res.json(result);
-    });
-};
-
-// Récupérer un utilisateur par post
-exports.getUserByPost = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM users WHERE id = (SELECT user_id FROM posts WHERE id = ?)';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result[0]);
-    });
-};
-
-// Récupérer un utilisateur par commentaire
-exports.getUserByComment = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM users WHERE id = (SELECT user_id FROM comments WHERE id = ?)';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result[0]);
-    });
-};
-
-// Récupérer un utilisateur par like
-exports.getUserByLike = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM users WHERE id = (SELECT user_id FROM likes WHERE id = ?)';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result[0]);
-    });
-};
-
-// Récupérer un utilisateur par follow
-exports.getUserByFollow = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM users WHERE id = (SELECT user_id FROM follows WHERE id = ?)';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result[0]);
-    });
-};
-
-// Récupérer un utilisateur par follower
-exports.getUserByFollower = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM users WHERE id = (SELECT follower_id FROM follows WHERE id = ?)';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result[0]);
-    });
-};
-
+        res.status(204).json();
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
 
