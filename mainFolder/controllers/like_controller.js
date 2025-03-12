@@ -1,77 +1,46 @@
+const Like = require('../models/like');
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
-// liker un post
-exports.likePost = (req, res) => {
-    const { user_id, post_id } = req.body;
-    const query = 'INSERT INTO likes (user_id, post_id) VALUES (?, ?)';
-    db.query(query, [user_id, post_id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.status(201).json({ message: 'Post liké avec succès', id: result.insertId });
-    });
+exports.createLike = (req, res, next) => {
+  const like = new Like.createLike({
+    user_id: req.body.user_id,
+    post_id: req.body.post_id
+  });
+  like.save()
+    .then(() => res.status(201).json({ message: 'Like enregistré !'}))
+    .catch(error => res.status(400).json({ error }));
 };
 
 
-// récupérer tous les likes
-exports.getAllLikes = (req, res) => {
-    const query = 'SELECT * FROM likes';
-    db.query(query, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
+exports.deleteLike = (req, res, next) => {
+    Like.deleteLike({ _id: req.params.id })
+    .then(() => res.status(200).json({ message: 'Like supprimé !'}))
+    .catch(error => res.status(400).json({ error }));
+}
 
-// supprimer un like
-exports.deleteLike = (req, res) => {
-    const { id } = req.params;
-    const query = 'DELETE FROM likes WHERE id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Like supprimé avec succès' });
-    });
-};
+exports.getAllLikes = (req, res, next) => {
+    Like.getAllLike()
+    .then(likes => res.status(200).json(likes))
+    .catch(error => res.status(400).json({ error }));
+}
 
-// liker un commentaire
-exports.likeComment = (req, res) => {
-    const { user_id, comment_id } = req.body;
-    const query = 'INSERT INTO likes_comments (user_id, comment_id) VALUES (?, ?)';
-    db.query(query, [user_id, comment_id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.status(201).json({ message: 'Commentaire liké avec succès', id: result.insertId });
-    });
-};
+exports.getLikeById = (req, res, next) => {
+    Like.getLikeById({ _id: req.params.id })
+    .then(like => res.status(200).json(like))
+    .catch(error => res.status(404).json({ error }));
+}
 
-// récupérer tous les likes de commentaires
-exports.getAllLikesComments = (req, res) => {
-    const query = 'SELECT * FROM likes_comments';
-    db.query(query, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
+exports.getLikesByPost = (req, res, next) => {
+    Like.getLikeByPost({ post_id: req.params.id })
+    .then(likes => res.status(200).json(likes))
+    .catch(error => res.status(404).json({ error }));
+}
 
-// supprimer un like de commentaire
-exports.deleteLikeComment = (req, res) => {
-    const { id } = req.params;
-    const query = 'DELETE FROM likes_comments WHERE id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Like de commentaire supprimé avec succès' });
-    });
-};
-
+exports.getLikeByComment = (req, res, next) => {
+    Like.getLikeByComment({ comment_id: req.params.id })
+    .then(likes => res.status(200).json(likes))
+    .catch(error => res.status(404).json({ error }));
+}
 
