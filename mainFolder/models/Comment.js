@@ -79,8 +79,9 @@ class Comment{
         return result.rows;
     }
 
+
     
-}
+}   
 
 module.exports = Comment;
 
