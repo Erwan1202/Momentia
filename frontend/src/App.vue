@@ -1,21 +1,21 @@
 <template>
-  <div class="flex min-h-screen bg-gray-100">
-    <!-- ✅ SideMenu bien positionné à gauche -->
-    <SideMenu class="w-64" />
+  <div class="flex min-h-screen bg-gray-100 flex-row">
+    <!-- Menu à gauche -->
+    <SideMenu class="w-1/6" />
 
-    <!-- ✅ Conteneur principal où les vues s'affichent -->
-    <div class="flex-1 p-8">
+    <!-- Contenu principal centré -->
+    <main class="flex-1 flex justify-center p-8">
       <router-view />
-    </div>
+    </main>
 
-    <!-- ✅ Espace pour "Amis" (visible sur grand écran) -->
-    <div class="w-64 bg-gray-200 p-4 hidden lg:block">
-      <h2 class="font-bold text-lg">Amis</h2>
-      <p>🔜 Bientôt disponible...</p>
-    </div>
+    <!-- Espace pour "Amis" à droite -->
+    <aside class="w-64 bg-gray-200 hidden lg:block">
+      <Amis class="w-1/6"/>
+    </aside>
   </div>
 </template>
 
 <script setup>
-import SideMenu from './components/common/SideMenu.vue';
+import SideMenu from './components/common/SideMenu.vue'
+import Amis from './components/common/Amis.vue'
 </script>
