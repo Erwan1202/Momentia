@@ -1,77 +1,69 @@
+const Dislike = require('../models/Dislike');
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// disliker un post
-exports.dislikePost = (req, res) => {
-    const { user_id, post_id } = req.body;
-    const query = 'DELETE FROM dislikes WHERE user_id = ? AND post_id = ?';
-    db.query(query, [user_id, post_id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Post disliké avec succès' });
-    });
-};
 
-// récupérer les dislikes par post
-exports.getDislikeByPost = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM dislikes WHERE post_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
+exports.getAllDislike = async (req, res) => {
+    try {
+        const dislikes = await Dislike.getAllDislike();
+        res.json(dislikes);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
-// récupérer les dislikes par user
-exports.getDislikeByUser = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM dislikes WHERE user_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
+exports.getDislikeById = async (req, res) => {
+    try {
+        const dislike = await Dislike.getDislikeById(req.params.id);
+        res.json(dislike);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
+exports.createDislike = async (req, res) => {
+    try {
+        const dislike = await Dislike.createDislike(req.body);
+        res.json(dislike);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
-// disliker un commentaire
-exports.dislikeComment = (req, res) => {
-    const { user_id, comment_id } = req.body;
-    const query = 'DELETE FROM dislikes_comments WHERE user_id = ? AND comment_id = ?';
-    db.query(query, [user_id, comment_id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Commentaire disliké avec succès' });
-    });
-};
+exports.deleteDislike = async (req, res) => {
+    try {
+        const dislike = await Dislike.deleteDislike(req.params.id);
+        res.json(dislike);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
-// récupérer les dislikes par commentaire
-exports.getDislikeByComment = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM dislikes_comments WHERE comment_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
+exports.getDislikeByUser = async (req, res) => {
+    try {
+        const dislike = await Dislike.getDislikeByUser(req.params.id);
+        res.json(dislike);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
-// récupérer les dislikes par user
-exports.getDislikeByUser = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT * FROM dislikes_comments WHERE user_id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
+exports.getDislikeByPost = async (req, res) => {
+    try {
+        const dislike = await Dislike.getDislikeByPost(req.params.id);
+        res.json(dislike);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+exports.getDislikeByComment = async (req, res) => {
+    try {
+        const dislike = await Dislike.getDislikeByComment(req.params.id);
+        res.json(dislike);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
