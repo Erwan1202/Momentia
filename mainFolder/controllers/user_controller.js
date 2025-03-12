@@ -178,3 +178,65 @@ exports.getUserFollower = (req, res) => {
         res.json(result);
     });
 };
+
+// Récupérer un utilisateur par post
+exports.getUserByPost = (req, res) => {
+    const { id } = req.params;
+    const query = 'SELECT * FROM users WHERE id = (SELECT user_id FROM posts WHERE id = ?)';
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(result[0]);
+    });
+};
+
+// Récupérer un utilisateur par commentaire
+exports.getUserByComment = (req, res) => {
+    const { id } = req.params;
+    const query = 'SELECT * FROM users WHERE id = (SELECT user_id FROM comments WHERE id = ?)';
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(result[0]);
+    });
+};
+
+// Récupérer un utilisateur par like
+exports.getUserByLike = (req, res) => {
+    const { id } = req.params;
+    const query = 'SELECT * FROM users WHERE id = (SELECT user_id FROM likes WHERE id = ?)';
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(result[0]);
+    });
+};
+
+// Récupérer un utilisateur par follow
+exports.getUserByFollow = (req, res) => {
+    const { id } = req.params;
+    const query = 'SELECT * FROM users WHERE id = (SELECT user_id FROM follows WHERE id = ?)';
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(result[0]);
+    });
+};
+
+// Récupérer un utilisateur par follower
+exports.getUserByFollower = (req, res) => {
+    const { id } = req.params;
+    const query = 'SELECT * FROM users WHERE id = (SELECT follower_id FROM follows WHERE id = ?)';
+    db.query(query, [id], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(result[0]);
+    });
+};
+
+
