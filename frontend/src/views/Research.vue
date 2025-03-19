@@ -1,29 +1,33 @@
 <template>
-    <div class="max-w-2xl mx-auto p-6">
-      <h1 class="text-3xl font-bold text-center mb-6">🔍 Recherche d'utilisateurs</h1>
-      
+    <div class="p-6">
+      <h1 class="text-2xl font-bold text-center mb-6">🔍 Recherche d'utilisateurs</h1>
+  
       <input 
         v-model="searchQuery"
-        type="text" 
         placeholder="Rechercher un utilisateur..."
-        class="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+        class="w-full p-2 border rounded-lg mb-4"
       />
-      
-      <ul v-if="filteredUsers.length" class="mt-6 space-y-3">
+  
+      <ul v-if="filteredUsers.length" class="space-y-2">
         <li 
           v-for="user in filteredUsers" 
-          :key="user.id" 
-          class="p-4 border rounded-lg shadow bg-white"
+          :key="user.id"
+          class="p-4 border rounded-lg shadow bg-white hover:bg-gray-100 transition"
         >
-          {{ user.username }}
+          <!-- ✅ Ajout du lien vers Profil.vue -->
+          <router-link :to="`/profil/${user.id}`" class="flex items-center space-x-3">
+            <img v-if="user.avatar_url" :src="user.avatar_url" class="w-10 h-10 rounded-full" alt="Avatar">
+            <span class="text-lg font-semibold text-blue-600 hover:underline">{{ user.username }}</span>
+          </router-link>
         </li>
       </ul>
-      <p v-else class="text-center text-gray-500 mt-4">Aucun utilisateur trouvé.</p>
+  
+      <p v-else class="text-gray-500 text-center">Aucun utilisateur trouvé.</p>
     </div>
   </template>
   
   <script>
-  import axios from 'axios';
+  import axios from "axios";
   
   export default {
     data() {
@@ -44,20 +48,9 @@
         const response = await axios.get("http://localhost:3000/api/users");
         this.users = response.data;
       } catch (error) {
-        console.error("Erreur de chargement des utilisateurs", error);
+        console.error("Erreur de chargement des utilisateurs :", error);
       }
     }
   };
   </script>
-  
-  <style scoped>
-  input {
-    transition: all 0.2s ease-in-out;
-  }
-  input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
-  }
-  </style>
   
