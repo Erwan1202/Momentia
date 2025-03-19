@@ -1,6 +1,6 @@
 <template>
-  <div class="max-w-2xl mx-auto"> <!-- ✅ Centre le feed -->
-    <h1 class="text-3xl font-bold text-center mb-8">📸 Fil d'actualité</h1>
+<div class="max-w-2xl ml-96 mr-auto">
+  <h1 class="text-3xl font-bold text-center mb-8">📸 Fil d'actualité</h1>
     
     <ul class="space-y-4">
       <li 
@@ -29,12 +29,17 @@
       🏠 Retour à l'accueil
     </button>
   </div>
+  <aside class="w-64 bg-gray-200 hidden lg:block">
+      <Amis class="w-1/6"/>
+  </aside>
 </template>
 
 <script>
 import axios from 'axios';
+import Amis from '../components/common/Amis.vue';
 
 export default {
+  components: { Amis },
   data() {
     return { posts: [] };
   },

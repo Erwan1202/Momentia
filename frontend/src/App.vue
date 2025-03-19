@@ -7,11 +7,7 @@
     <main class="flex-1 flex justify-center p-8">
       <router-view />
     </main>
-
-    <!-- Espace pour "Amis" à droite -->
-    <aside class="w-64 bg-gray-200 hidden lg:block">
-      <Amis class="w-1/6"/>
-    </aside>
+    
   </div>
 </template>
 
