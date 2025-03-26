@@ -7,7 +7,7 @@ const app = express();
 const PORT = 3000;
 app.use(cors());
 const path = require('path'); 
-app.use('/uploads', express.static(path.join(__dirname, '../images')));
+app.use('/uploads', express.static('/home/azureuser/images'));
 
 
 // Route d'accueil
