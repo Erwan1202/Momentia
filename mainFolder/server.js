@@ -6,6 +6,9 @@ const db = require('./config/db');  // Import de la connexion DB
 const app = express();
 const PORT = 3000;
 app.use(cors());
+const path = require('path'); 
+app.use('/uploads', express.static(path.join(__dirname, '../images')));
+
 
 // Route d'accueil
 app.get('/', (req, res) => {
@@ -29,6 +32,29 @@ app.get('/api/posts', (req, res) => {
             return res.status(500).json({ error: err.message });
         }
         console.log("✅ Posts récupérés :", result); // ✅ Voir le contenu récupéré
+        res.json(result);
+    });
+});
+
+app.get('/api/posts/:id', (req, res) => {
+    const postId = req.params.id;
+    db.query('SELECT * FROM posts WHERE id = ?', postId, (err, result) => {
+        if (err) {
+            console.error("❌ Erreur SQL :", err); // ✅ Ajoute ce log
+            return res.status(500).json({ error: err.message });
+        }
+        console.log("✅ Post récupéré :", result); // ✅ Voir le contenu récupéré
+        res.json(result[0]);
+    });
+});
+
+app.get('/api/users', (req, res) => {
+    db.query('SELECT * FROM users', (err, result) => {
+        if (err) {
+            console.error("❌ Erreur SQL :", err); // ✅ Ajoute ce log
+            return res.status(500).json({ error: err.message });
+        }
+        console.log("✅ Users récupérés :", result); // ✅ Voir le contenu récupéré
         res.json(result);
     });
 });

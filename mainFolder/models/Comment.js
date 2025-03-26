@@ -49,7 +49,39 @@ class Comment{
         return result.rows;
     }
 
-}
+    static async getCommentByPostAndUser(post_id, user_id){
+        const result = await db.query('SELECT * FROM comments WHERE post_id = $1 AND user_id = $2', [post_id, user_id]);
+        return result.rows;
+    }
+
+    static async LikeComment(id){
+        const result = await db.query('UPDATE comments SET likes = likes + 1 WHERE id = $1 RETURNING *', [id]);
+        return result.rows[0];
+    }
+
+    static async DislikeComment(id){
+        const result = await db.query('UPDATE comments SET likes = likes - 1 WHERE id = $1 RETURNING *', [id]);
+        return result.rows[0];
+    }
+
+    static async getCommentByLikes(){
+        const result = await db.query('SELECT * FROM comments ORDER BY likes DESC');
+        return result.rows;
+    }
+
+    static async getCommentByDate(){
+        const result = await db.query('SELECT * FROM comments ORDER BY created_at DESC');
+        return result.rows;
+    }
+
+    static async getCommentByPostAndDate(post_id){
+        const result = await db.query('SELECT * FROM comments WHERE post_id = $1 ORDER BY created_at DESC', [post_id]);
+        return result.rows;
+    }
+
+
+    
+}   
 
 module.exports = Comment;
 

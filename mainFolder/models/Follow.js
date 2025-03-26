@@ -52,6 +52,12 @@ class Follow{
         const result = await db.query('SELECT * FROM follows WHERE follower_id = $1', [user.id]);
         return result.rows;
     }
+    
+    static async getFollowByUserAndFollower(user_id, follower_id){
+        const result = await db.query('SELECT * FROM follows WHERE user_id = $1 AND follower_id = $2', [user_id, follower_id]);
+        return result.rows;
+    }
+
 
 
 }

@@ -1,71 +1,94 @@
-const db = require('../config/db');
+const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Inscription
-exports.register = (req, res) => {
-    const { username, email, password } = req.body;
-    const passwordHash = bcrypt.hashSync(password, 10);
+// créer un utilisateur
+export const createUser = (req, res) => {
+    try{
+        const { username, email, password } = req.body;
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        const user = new User.createUser({username, email, password: hashedPassword});
+        res.status(201).json(user);
 
-    const query = 'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)';
-    db.query(query, [username, email, passwordHash], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}   
+
+// se connecter
+export const login = (req, res) => {
+    try{
+        const { email, password } = req.body;
+        const user = User.getUserByEmail(email);
+        if(!user){
+            return res.status(404).json({message: 'User not found'});
         }
-        res.status(201).json({ message: 'Utilisateur créé avec succès', id: result.insertId });
-    });
-};
-
-// Connexion
-exports.login = (req, res) => {
-    const { email, password } = req.body;
-
-    const query = 'SELECT * FROM users WHERE email = ?';
-    db.query(query, [email], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+        if(bcrypt.compareSync(password, user.password)){
+            const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+            return res.status(200).json({token});
+        }else{
+            return res.status(401).json({message: 'Invalid credentials'});
         }
-        if (result.length === 0) {
-            return res.status(400).json({ message: 'Utilisateur non trouvé' });
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
+
+// se deconnecter
+export const logout = (req, res) => {
+    try{
+        res.status(200).json({token: ''});
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
+
+// récupérer un utilisateur
+export const getUser = (req, res) => {
+    try{
+        const user = User.getUserById(req.params.id);
+        if(!user){
+            return res.status(404).json({message: 'User not found'});
         }
+        res.status(200).json(user);
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
 
-        const user = result[0];
-        const isValidPassword = bcrypt.compareSync(password, user.password_hash);
-
-        if (!isValidPassword) {
-            return res.status(400).json({ message: 'Mot de passe incorrect' });
+// mettre à jour un utilisateur
+export const updateUser = (req, res) => {
+    try{
+        const user = User.updateUser(req.params.id, req.body);
+        if(!user){
+            return res.status(404).json({message: 'User not found'});
         }
+        res.status(200).json(user);
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
 
-        // Générer un token JWT
-        const token = jwt.sign({ id: user.id }, 'SECRET_KEY', { expiresIn: '1h' });
+// récupérer tous les utilisateurs
+export const getAllUser = (req, res) => {
+    try{
+        const users = User.getAllUser();
+        res.status(200).json(users);
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
 
-        res.json({ message: 'Connexion réussie', token });
-    });
-};
-
-// Récupérer un utilisateur
-exports.getUser = (req, res) => {
-    const { id } = req.params;
-    const query = 'SELECT id, username, email, bio, profile_picture FROM users WHERE id = ?';
-    
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+// supprimer un utilisateur
+export const deleteUser = (req, res) => {
+    try{
+        const user = User.deleteUser(req.params.id);
+        if(!user){
+            return res.status(404).json({message: 'User not found'});
         }
-        if (result.length === 0) {
-            return res.status(404).json({ message: 'Utilisateur non trouvé' });
-        }
-        res.json(result[0]);
-    });
-};
+        res.status(204).json();
+    }catch(err){
+        res.status(500).json({message: err.message});
+    }
+}
 
-// Récupérer tous les utilisateurs
-exports.getAllUsers = (req, res) => {
-    const query = 'SELECT id, username, email FROM users';
-    db.query(query, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(result);
-    });
-};
