@@ -11,7 +11,7 @@ const routes = [
 
   {path: '/profil/:id', name: 'profil', component: Profil},
 
-  {path: '/post', name: 'newpost', component: NewPost}
+  {path: '/newpost', name: 'newpost', component: NewPost}
 
 
 ];

@@ -2,7 +2,7 @@
      <div>
     <h1 class="text-red-500 text-3xl">Je suis dans NewPost.vue 🎉</h1>
     <!-- le reste du formulaire ici -->
-  </div>
+  
     <div class="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md">
       <h2 class="text-2xl font-bold mb-6 text-center">📤 Créer un nouveau post</h2>
   
@@ -26,6 +26,7 @@
           Publier
         </button>
       </form>
+    </div>
     </div>
   </template>
   

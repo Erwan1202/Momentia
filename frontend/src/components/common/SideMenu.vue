@@ -19,7 +19,7 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/post" class="flex items-center gap-2 hover:text-blue-400">
+          <router-link to="/newpost" class="flex items-center gap-2 hover:text-blue-400">
             <PlusSquareIcon class="w-5 h-5"/> Nouveau Post
           </router-link>
         </li>
