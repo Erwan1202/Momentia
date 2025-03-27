@@ -49,7 +49,8 @@ export default {
   methods: {
     async fetchPosts() {
       try {
-        const response = await axios.get("http://localhost:3000/api/posts");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
+
         console.log(response.data); // Ajoutez ce log pour vérifier les données
         this.posts = response.data;
       } catch (error) {

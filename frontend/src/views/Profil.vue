@@ -49,7 +49,8 @@
     async mounted() {
       try {
         // Récupérer tous les posts
-        const postsResponse = await axios.get("http://localhost:3000/api/posts");
+        const postsResponse = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
+
         this.posts = postsResponse.data;
       } catch (error) {
         console.error("Erreur de chargement des posts :", error);
@@ -62,7 +63,8 @@
       },
       getImageUrl(imagePath) {
   if (!imagePath) return "/default-image.jpg"; // Image par défaut si vide
-  return `http://localhost:3000/uploads/${imagePath.split('/').pop()}`;
+  return `https://momentia.cloud/uploads/${imagePath.split('/').pop()}`;
+
 }
 
     }
