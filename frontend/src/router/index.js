@@ -13,6 +13,7 @@ const routes = [
 
   {path: '/post', name: 'newpost', component: NewPost},
 
+
 ];
 
 const router = createRouter({

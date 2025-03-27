@@ -17,9 +17,7 @@
           alt="Post Image"
           class="rounded-lg w-full my-4 object-cover max-h-[300px]"
         />
-        
         <p><strong>📍 Localisation :</strong> {{ post.location || "Non précisée" }}</p>
-
         <p><strong>🕒 Publié le :</strong> {{ formatDate(post.created_at) }}</p>
       </li>
     </ul>
@@ -46,21 +44,18 @@ export default {
     return { posts: [] };
   },
   mounted() {
-  console.log("🏁 Composant monté !");
-  this.fetchPosts();
-},
+    this.fetchPosts();
+  },
   methods: {
     async fetchPosts() {
-  try {
-    console.log("⚙️ Envoi de la requête...");
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
-    console.log("📥 Réponse reçue :", response.data);
-    this.posts = response.data;
-  } catch (error) {
-    console.error("❌ Erreur lors du fetch des posts :", error);
-  }
-},
-
+      try {
+        const response = await axios.get("http://localhost:3000/api/posts");
+        console.log(response.data); // Ajoutez ce log pour vérifier les données
+        this.posts = response.data;
+      } catch (error) {
+        console.error("Erreur chargement posts :", error);
+      }
+    },
     formatDate(dateString) {
       const options = { 
         year: "numeric", month: "long", day: "numeric",
