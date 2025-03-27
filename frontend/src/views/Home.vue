@@ -49,15 +49,16 @@ export default {
 },
   methods: {
     async fetchPosts() {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
+  try {
+    console.log("⚙️ Envoi de la requête...");
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
+    console.log("📥 Réponse reçue :", response.data);
+    this.posts = response.data;
+  } catch (error) {
+    console.error("❌ Erreur lors du fetch des posts :", error);
+  }
+},
 
-        console.log(response.data); // Ajoutez ce log pour vérifier les données
-        this.posts = response.data;
-      } catch (error) {
-        console.error("Erreur chargement posts :", error);
-      }
-    },
     formatDate(dateString) {
       const options = { 
         year: "numeric", month: "long", day: "numeric",
