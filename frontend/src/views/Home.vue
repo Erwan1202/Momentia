@@ -44,9 +44,6 @@ export default {
     return { posts: [] };
   },
   mounted() {
-    this.fetchPosts();
-  },
-  mounted() {
   console.log("🏁 Composant monté !");
   this.fetchPosts();
 },
