@@ -15,6 +15,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Route POST avec image
-router.post('/', upload.single('image'), postController.createPost);
+rrouter.post('/', upload.single('image'), (req, res) => {
+    try {
+        postController.createPost(req, res);
+    } catch (error) {
+        console.error('Erreur dans la route POST:', error);
+        res.status(500).json({ error: 'Erreur serveur dans la route POST' });
+    }
+});
+
 
 module.exports = router;

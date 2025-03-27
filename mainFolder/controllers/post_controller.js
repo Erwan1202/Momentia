@@ -4,24 +4,32 @@ const path = require('path');
 
 // création post avec image upload
 exports.createPost = (req, res) => {
+    console.log("🔥 Requête reçue !");
+    console.log("📦 Body :", req.body);
+    console.log("📷 Fichier :", req.file);
+
     const { caption, location, user_id } = req.body;
     const imageFile = req.file;
 
     if (!imageFile) {
+        console.warn("⚠️ Aucun fichier reçu !");
         return res.status(400).json({ error: 'Aucune image fournie.' });
     }
 
     const imageUrl = `http://momentia.cloud/uploads/${imageFile.filename}`;
-
     const sql = `INSERT INTO posts (user_id, caption, image_url, location, created_at) VALUES (?, ?, ?, ?, NOW())`;
     const values = [user_id, caption, imageUrl, location];
 
+    console.log("📤 Envoi SQL :", sql);
+    console.log("🧾 Valeurs :", values);
+
     db.query(sql, values, (err, result) => {
         if (err) {
-            console.error('❌ Erreur lors de l\'insertion du post :', err);
+            console.error("❌ Erreur SQL :", err);
             return res.status(500).json({ error: 'Erreur lors de la création du post.' });
         }
-        res.status(201).json({ message: '✅ Post créé avec succès !' });
+        console.log("✅ Post inséré !");
+        res.status(201).json({ message: 'Post créé avec succès !' });
     });
 };
 
