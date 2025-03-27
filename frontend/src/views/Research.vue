@@ -46,7 +46,7 @@
     async mounted() {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/users`);
-
+        console.log("👀 Données utilisateurs :", response.data); 
         this.users = response.data;
       } catch (error) {
         console.error("Erreur de chargement des utilisateurs :", error);
