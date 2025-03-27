@@ -46,6 +46,10 @@ export default {
   mounted() {
     this.fetchPosts();
   },
+  mounted() {
+  console.log("🏁 Composant monté !");
+  this.fetchPosts();
+},
   methods: {
     async fetchPosts() {
       try {
