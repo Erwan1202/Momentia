@@ -17,7 +17,9 @@
           alt="Post Image"
           class="rounded-lg w-full my-4 object-cover max-h-[300px]"
         />
+        
         <p><strong>📍 Localisation :</strong> {{ post.location || "Non précisée" }}</p>
+
         <p><strong>🕒 Publié le :</strong> {{ formatDate(post.created_at) }}</p>
       </li>
     </ul>
