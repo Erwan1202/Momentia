@@ -1,8 +1,8 @@
 // post_controller.js
-const Post = require('../models/Post');
+const db = require('../config/db');
+const path = require('path');
 
-// creation post avec image upload
-// Création d’un post avec upload d'image
+// création post avec image upload
 exports.createPost = (req, res) => {
     const { caption, location, user_id } = req.body;
     const imageFile = req.file;
@@ -25,80 +25,73 @@ exports.createPost = (req, res) => {
     });
 };
 
-// modification post
-exports.modifyPost = (req, res, next) => {
-  try {
-    const updatedData = {
-      title: req.body.title,
-      content: req.body.content,
-      userId: req.body.userId,
-    };
+// modification post (texte uniquement, sans image)
+exports.modifyPost = (req, res) => {
+    const { caption, location } = req.body;
+    const postId = req.params.id;
 
-    if (req.file) {
-      updatedData.imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    } else if (req.body.imageUrl) {
-      updatedData.imageUrl = req.body.imageUrl;
-    }
+    const sql = `UPDATE posts SET caption = ?, location = ? WHERE id = ?`;
+    const values = [caption, location, postId];
 
-    Post.updateOne({ _id: req.params.id }, updatedData)
-      .then(() => res.status(201).json({ message: 'Post updated successfully!' }))
-      .catch((error) => res.status(400).json({ error }));
-  } catch (error) {
-    res.status(500).json({ error });
-  }
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('❌ Erreur lors de la modification du post :', err);
+            return res.status(500).json({ error: 'Erreur lors de la modification du post.' });
+        }
+        res.status(200).json({ message: '✅ Post modifié avec succès !' });
+    });
 };
 
 // suppression post
-exports.deletePost = (req, res, next) => {
-  try {
-    Post.deleteOne({ _id: req.params.id })
-      .then(() => res.status(200).json({ message: 'Post deleted successfully!' }))
-      .catch((error) => res.status(400).json({ error }));
-  } catch (error) {
-    res.status(500).json({ error });
-  }
+exports.deletePost = (req, res) => {
+    const postId = req.params.id;
+    db.query('DELETE FROM posts WHERE id = ?', [postId], (err, result) => {
+        if (err) {
+            console.error('❌ Erreur lors de la suppression du post :', err);
+            return res.status(500).json({ error: 'Erreur lors de la suppression du post.' });
+        }
+        res.status(200).json({ message: '✅ Post supprimé avec succès !' });
+    });
 };
 
-// recuperation post
-exports.getOnePost = (req, res, next) => {
-  try {
-    Post.findOne({ _id: req.params.id })
-      .then((post) => res.status(200).json(post))
-      .catch((error) => res.status(404).json({ error }));
-  } catch (error) {
-    res.status(500).json({ error });
-  }
+// récupération d’un seul post
+exports.getOnePost = (req, res) => {
+    const postId = req.params.id;
+    db.query('SELECT * FROM posts WHERE id = ?', [postId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(result[0]);
+    });
 };
 
-// recuperation de tous les posts
-exports.getAllPosts = (req, res, next) => {
-  try {
-    Post.find()
-      .then((posts) => res.status(200).json(posts))
-      .catch((error) => res.status(400).json({ error }));
-  } catch (error) {
-    res.status(500).json({ error });
-  }
+// récupération de tous les posts
+exports.getAllPosts = (req, res) => {
+    db.query('SELECT * FROM posts ORDER BY created_at DESC', (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(result);
+    });
 };
 
-// recuperation de tous les posts d'un utilisateur
-exports.getAllPostsByUser = (req, res, next) => {
-  try {
-    Post.find({ userId: req.params.id })
-      .then((posts) => res.status(200).json(posts))
-      .catch((error) => res.status(400).json({ error }));
-  } catch (error) {
-    res.status(500).json({ error });
-  }
+// récupération de tous les posts d’un utilisateur
+exports.getAllPostsByUser = (req, res) => {
+    const userId = req.params.id;
+    db.query('SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC', [userId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(result);
+    });
 };
 
-// recuperation des posts par date decroissante
-exports.getPostsByDate = (req, res, next) => {
-  try {
-    Post.find().sort({ created_at: -1 })
-      .then((posts) => res.status(200).json(posts))
-      .catch((error) => res.status(400).json({ error }));
-  } catch (error) {
-    res.status(500).json({ error });
-  }
+// récupération des posts par date décroissante
+exports.getPostsByDate = (req, res) => {
+    db.query('SELECT * FROM posts ORDER BY created_at DESC', (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(result);
+    });
 };
