@@ -16,10 +16,6 @@
           <input type="password" v-model="password" required />
         </div>
         <div>
-          <label for="profilePicture">Profile Picture</label>
-          <input type="file" @change="onFileChange" />
-        </div>
-        <div>
           <label for="bio">Bio</label>
           <textarea v-model="bio"></textarea>
         </div>

@@ -4,7 +4,7 @@ const cors = require('cors');
 const db = require('./config/db');  // Import de la connexion DB
 
 const app = express();
-const PORT = 3000;
+const PORT = 3005;
 app.use(cors());
 const path = require('path'); 
 app.use('/uploads', express.static(path.join(__dirname, '../images')));
