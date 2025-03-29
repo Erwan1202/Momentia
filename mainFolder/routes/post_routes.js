@@ -3,17 +3,10 @@ const router = express.Router();
 const postController = require('../controllers/post_controller');
 const path = require('path');
 
-// Config Multer
-const storage = multer.diskStorage({
-    destination: '/home/azureuser/images',
-    filename: (req, file, cb) => {
-        const uniqueName = `${Date.now()}-${file.originalname}`;
-        cb(null, uniqueName);
-    }
-});
+
 
 const uploadMiddleware = require('../middleware/multer-config');
-router.post('/', upload.single('image'), (req, res) => {
+router.post('/', uploadMiddleware, (req, res) => {
     try {
         postController.createPost(req, res);
     } catch (error) {
