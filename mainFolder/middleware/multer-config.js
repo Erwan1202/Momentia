@@ -1,9 +1,17 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, 'uploads');
+    const uploadPath = '/home/azureuser/images';
+
+    // Assure-toi que le dossier existe
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    callback(null, uploadPath);
   },
   filename: (req, file, callback) => {
     const name = file.originalname.split(' ').join('_');
