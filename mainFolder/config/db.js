@@ -18,7 +18,7 @@ pool.getConnection((err, connection) => {
         console.error('❌ Erreur de connexion MySQL :', err);
     } else {
         console.log('✅ Connecté à la base de données MySQL !');
-        connection.release(); // Libère la connexion
+        connection.release();
     }
 });
 
