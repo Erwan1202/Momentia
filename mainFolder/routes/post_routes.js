@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/post_controller');
-const multer = require('multer');
 const path = require('path');
 
 // Config Multer
@@ -12,9 +11,8 @@ const storage = multer.diskStorage({
         cb(null, uniqueName);
     }
 });
-const upload = multer({ storage });
 
-// Route POST avec image
+const uploadMiddleware = require('../middleware/multer-config');
 router.post('/', upload.single('image'), (req, res) => {
     try {
         postController.createPost(req, res);
