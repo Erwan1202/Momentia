@@ -5,9 +5,10 @@ const jwt = require('jsonwebtoken');
 // créer un utilisateur
 export const createUser = (req, res) => {
     try{
-        const { username, email, password } = req.body;
+        const { username, email, password, bio } = req.body;
         const hashedPassword = bcrypt.hashSync(password, 10);
-        const user = new User.createUser({username, email, password: hashedPassword});
+        const user = new User.createUser({username, email, password: hashedPassword, bio}
+        );
         res.status(201).json(user);
 
     }catch(err){
