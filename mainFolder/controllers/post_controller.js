@@ -1,147 +1,105 @@
-const Post = require('../models/Post');
+// post_controller.js
+const db = require('../config/db');
+const path = require('path');
 
-//creation post
-exports.createPost = (req, res, next) => {
-    try {
-        const post = new Post({
-            title: req.body.title,
-            content: req.body.content,
-            imageUrl: req.body.imageUrl,
-            userId: req.body.userId
-        });
-        post.save().then(() => {
-            res.status(201).json({
-                message: 'Post saved successfully!'
-            });
-        }).catch((error) => {
-            res.status(400).json({
-                error: error
-            });
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            error: error
-        });
-    }
-}
+// création post avec image upload
+exports.createPost = (req, res) => {
+    console.log("🔥 Requête reçue !");
+    console.log("📦 Body :", req.body);
+    console.log("📷 Fichier :", req.file);
 
-//modification post
-exports.modifyPost = (req, res, next) => {
-    try {
-        const post = new Post({
-            _id: req.params.id,
-            title: req.body.title,
-            content: req.body.content,
-            imageUrl: req.body.imageUrl,
-            userId: req.body.userId
-        });
-        Post.updateOne({ _id: req.params.id }, post).then(() => {
-            res.status(201).json({
-                message: 'Post updated successfully!'
-            });
-        }).catch((error) => {
-            res.status(400).json({
-                error: error
-            });
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            error: error
-        });
-    }
-}
+    const { caption, location, user_id } = req.body;
+    const imageFile = req.file;
 
-//suppression post
-exports.deletePost = (req, res, next) => {
-    try {
-        Post.deleteOne({ _id: req.params.id }).then(() => {
-            res.status(200).json({
-                message: 'Post deleted successfully!'
-            });
-        }).catch((error) => {
-            res.status(400).json({
-                error: error
-            });
-        });
+    if (!imageFile) {
+        console.warn("⚠️ Aucun fichier reçu !");
+        return res.status(400).json({ error: 'Aucune image fournie.' });
     }
-    catch (error) {
-        res.status(500).json({
-            error: error
-        });
-    }
-}
 
+    const imageUrl = `http://momentia.cloud/uploads/${imageFile.filename}`;
+    const sql = `INSERT INTO posts (user_id, caption, image_url, location, created_at) VALUES (?, ?, ?, ?, NOW())`;
+    const values = [user_id, caption, imageUrl, location];
 
-//recuperation post
-exports.getOnePost = (req, res, next) => {
-    try {
-        Post.findOne({ _id: req.params.id }).then((post) => {
-            res.status(200).json(post);
-        }).catch((error) => {
-            res.status(404).json({
-                error: error
-            });
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            error: error
-        });
-    }
-}
+    console.log("📤 Envoi SQL :", sql);
+    console.log("🧾 Valeurs :", values);
 
-//recuperation de tous les posts
-exports.getAllPosts = (req, res, next) => {
-    try {
-        Post.find().then((posts) => {
-            res.status(200).json(posts);
-        }).catch((error) => {
-            res.status(400).json({
-                error: error
-            });
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            error: error
-        });
-    }
-}
-
-//recuperation de tous les posts d'un utilisateur
-exports.getAllPostsByUser = (req, res, next) => {
-    try {
-        Post.find({ userId: req.params.id }).then((posts) => {
-            res.status(200).json(posts);
-        }).catch((error) => {
-            res.status(400).json({
-                error: error
-            });
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            error: error
-        });
-    }
-}
-
-//recuperation des posts par pagear date decroissante
-export const getPostsByDate = (req, res, next) => {
-    try{
-        Post.find().sort({created_at: -1}).then((posts) => {
-            res.status(200).json(posts);
-        }).catch((error) => {
-            res.status(400).json({
-                error: error
-            });
-        });
-}catch (error) {
-    res.status(500).json({
-        error: error
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error("❌ Erreur SQL :", err);
+            return res.status(500).json({ error: 'Erreur lors de la création du post.' });
+        }
+        console.log("✅ Post inséré !");
+        res.status(201).json({ message: 'Post créé avec succès !' });
     });
-}
+};
 
-}
+// modification post (texte uniquement, sans image)
+exports.modifyPost = (req, res) => {
+    const { caption, location } = req.body;
+    const postId = req.params.id;
+
+    const sql = `UPDATE posts SET caption = ?, location = ? WHERE id = ?`;
+    const values = [caption, location, postId];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('❌ Erreur lors de la modification du post :', err);
+            return res.status(500).json({ error: 'Erreur lors de la modification du post.' });
+        }
+        res.status(200).json({ message: '✅ Post modifié avec succès !' });
+    });
+};
+
+// suppression post
+exports.deletePost = (req, res) => {
+    const postId = req.params.id;
+    db.query('DELETE FROM posts WHERE id = ?', [postId], (err, result) => {
+        if (err) {
+            console.error('❌ Erreur lors de la suppression du post :', err);
+            return res.status(500).json({ error: 'Erreur lors de la suppression du post.' });
+        }
+        res.status(200).json({ message: '✅ Post supprimé avec succès !' });
+    });
+};
+
+// récupération d’un seul post
+exports.getOnePost = (req, res) => {
+    const postId = req.params.id;
+    db.query('SELECT * FROM posts WHERE id = ?', [postId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(result[0]);
+    });
+};
+
+// récupération de tous les posts
+exports.getAllPosts = (req, res) => {
+    db.query('SELECT * FROM posts ORDER BY created_at DESC', (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(result);
+    });
+};
+
+// récupération de tous les posts d’un utilisateur
+exports.getAllPostsByUser = (req, res) => {
+    const userId = req.params.id;
+    db.query('SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC', [userId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(result);
+    });
+};
+
+// récupération des posts par date décroissante
+exports.getPostsByDate = (req, res) => {
+    db.query('SELECT * FROM posts ORDER BY created_at DESC', (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(result);
+    });
+};
